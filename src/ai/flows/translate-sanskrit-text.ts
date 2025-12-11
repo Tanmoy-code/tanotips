@@ -43,7 +43,7 @@ const translateSanskritTextPrompt = ai.definePrompt({
   output: {schema: TranslateSanskritTextOutputSchema},
   prompt: `Translate the following Sanskrit text into English, intelligently incorporating known Sanskrit root meanings:
 
-{{sanskritText}}`,
+{{{sanskritText}}}`,
 });
 
 const translateSanskritTextFlow = ai.defineFlow(
@@ -54,6 +54,9 @@ const translateSanskritTextFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await translateSanskritTextPrompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('Translation failed to produce an output.');
+    }
+    return output;
   }
 );
