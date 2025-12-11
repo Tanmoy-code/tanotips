@@ -36,9 +36,7 @@ const prompt = ai.definePrompt({
 Your task is to translate the text in the image into English.
 Use all your knowledge of Sanskrit, including root meanings, to provide the most accurate translation possible.
 
-Image: {{media url=imageUri}}
-
-Translation:`,
+Image: {{media url=imageUri}}`,
 });
 
 const translateSanskritImageFlow = ai.defineFlow(
