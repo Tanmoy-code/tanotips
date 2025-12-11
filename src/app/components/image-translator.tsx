@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, FormEvent } from "react";
 import Image from "next/image";
 import { handleImageTranslation } from "@/app/actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,33 +15,27 @@ export function ImageTranslator() {
   const [translation, setTranslation] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
 
-  async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setIsLoading(true);
-    setTranslation(null);
-
-    if (!formRef.current) {
-        setIsLoading(false);
-        return;
-    }
-
-    const formData = new FormData(e.currentTarget);
-    const file = formData.get('image') as File;
     
-    if (!file || file.size === 0) {
+    if (!selectedFile) {
       toast({
         variant: "destructive",
         title: "No Image",
         description: "Please select an image file to translate.",
       });
-      setIsLoading(false);
       return;
     }
+    
+    setIsLoading(true);
+    setTranslation(null);
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
 
     const result = await handleImageTranslation(formData);
     
@@ -61,7 +55,7 @@ export function ImageTranslator() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFileName(file.name);
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -74,7 +68,7 @@ export function ImageTranslator() {
 
   const removeImage = () => {
     setPreview(null);
-    setFileName(null);
+    setSelectedFile(null);
     if(fileInputRef.current) {
         fileInputRef.current.value = "";
     }
@@ -82,7 +76,16 @@ export function ImageTranslator() {
 
   return (
     <div className="space-y-6">
-      <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
+      <form onSubmit={handleFormSubmit} className="space-y-4">
+        <input 
+            id="sanskrit-image" 
+            name="image" 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+            className="hidden" 
+            accept="image/png, image/jpeg, image/jpg, image/webp" 
+        />
         {!preview ? (
             <div className="flex items-center justify-center w-full">
               <div
@@ -95,11 +98,9 @@ export function ImageTranslator() {
                   <p className="text-xs text-muted-foreground">PNG, JPG, JPEG, WEBP</p>
                 </div>
               </div>
-              <input id="sanskrit-image" name="image" type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/png, image/jpeg, image/jpg, image/webp" />
             </div>
         ) : (
           <div className="w-full space-y-4">
-            <input id="sanskrit-image" name="image" type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/png, image/jpeg, image/jpg, image/webp" />
             <div className="relative w-full overflow-hidden rounded-lg border">
                 <div className="relative aspect-video w-full">
                     <Image
