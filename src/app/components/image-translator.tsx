@@ -83,9 +83,8 @@ export function ImageTranslator() {
               <label
                 htmlFor="sanskrit-image"
                 className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-accent/10 transition-colors"
-                onClick={triggerFileSelect}
               >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6" onClick={triggerFileSelect}>
                   <ImageUp className="w-10 h-10 mb-3 text-muted-foreground" />
                   <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                   <p className="text-xs text-muted-foreground">PNG, JPG, JPEG, WEBP</p>
