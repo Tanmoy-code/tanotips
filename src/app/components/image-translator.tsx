@@ -113,7 +113,6 @@ export function ImageTranslator() {
                     <X className="h-4 w-4" />
                 </Button>
             </div>
-            <Button variant="outline" className="w-full" onClick={triggerFileSelect}>Change Image</Button>
           </div>
         )}
         
