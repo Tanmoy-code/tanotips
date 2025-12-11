@@ -30,7 +30,7 @@ export function ImageTranslator() {
         return;
     }
 
-    const formData = new FormData(formRef.current);
+    const formData = new FormData(e.currentTarget);
     const file = formData.get('image') as File;
     
     if (!file || file.size === 0) {
