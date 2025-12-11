@@ -38,8 +38,9 @@ export async function handleImageTranslation(formData: FormData) {
 
     const result = await translateSanskritImage({ imageUri });
     return { success: true, translation: result.translation };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Image translation error:', error);
-    return { success: false, error: 'Failed to translate image. The image may be too large or in an unsupported format.' };
+    const message = error.message || 'Failed to translate image. The image may be too large or in an unsupported format.';
+    return { success: false, error: message };
   }
 }

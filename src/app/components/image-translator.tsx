@@ -18,14 +18,22 @@ export function ImageTranslator() {
   const [fileName, setFileName] = useState<string | null>(null);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
     setTranslation(null);
 
-    const file = fileInputRef.current?.files?.[0];
-    if (!file) {
+    if (!formRef.current) {
+        setIsLoading(false);
+        return;
+    }
+
+    const formData = new FormData(formRef.current);
+    const file = formData.get('image') as File;
+    
+    if (!file || file.size === 0) {
       toast({
         variant: "destructive",
         title: "No Image",
@@ -34,9 +42,6 @@ export function ImageTranslator() {
       setIsLoading(false);
       return;
     }
-    
-    const formData = new FormData();
-    formData.append('image', file);
 
     const result = await handleImageTranslation(formData);
     
@@ -77,23 +82,24 @@ export function ImageTranslator() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleFormSubmit} className="space-y-4">
+      <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
         {!preview ? (
             <div className="flex items-center justify-center w-full">
-              <label
-                htmlFor="sanskrit-image"
+              <div
+                onClick={triggerFileSelect}
                 className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-accent/10 transition-colors"
               >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6" onClick={triggerFileSelect}>
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <ImageUp className="w-10 h-10 mb-3 text-muted-foreground" />
                   <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                   <p className="text-xs text-muted-foreground">PNG, JPG, JPEG, WEBP</p>
                 </div>
-              </label>
-              <input id="sanskrit-image" type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/png, image/jpeg, image/jpg, image/webp" />
+              </div>
+              <input id="sanskrit-image" name="image" type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/png, image/jpeg, image/jpg, image/webp" />
             </div>
         ) : (
           <div className="w-full space-y-4">
+            <input id="sanskrit-image" name="image" type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/png, image/jpeg, image/jpg, image/webp" />
             <div className="relative w-full overflow-hidden rounded-lg border">
                 <div className="relative aspect-video w-full">
                     <Image
